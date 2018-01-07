@@ -1,0 +1,21 @@
+{
+  "name": "passport-yj-v2",
+  "version": "1.0.0",
+  "description": "openid connect lib for yconnect_v2",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "keywords": [
+    "openid",
+  ],
+  "author": "dais0n",
+  "license": "MIT",
+  "dependencies": {
+    "jsonwebtoken": "^8.1.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "mocha": "^4.1.0"
+  }
+}
