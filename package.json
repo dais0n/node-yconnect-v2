@@ -7,7 +7,7 @@
     "test": "mocha -R spec"
   },
   "keywords": [
-    "openid",
+    "openid"
   ],
   "author": "dais0n",
   "license": "MIT",
