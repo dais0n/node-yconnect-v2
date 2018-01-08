@@ -1,5 +1,5 @@
 var assert  = require('assert');
-var IdToken = require('../lib/idToken');
+var IdToken = require('../src/idtoken');
 var fs      = require('fs');
 var path    = require('path');
 
