@@ -22,40 +22,41 @@ class yconnect {
   }
 
   authorization(code, nonce) {
-    return new Promise((resolve, reject) => {this.tokenRequest(code)
-      .then((response) => {
-        setIdToken(response['id_token']);
-        setAccessToken(response['access_token']);
+    return new Promise((resolve, reject) => {
+      this.tokenRequest(code)
+        .then((response) => {
+          this.setIdToken(response['id_token']);
+          this.setAccessToken(response['access_token']);
 
-        // get now
-        let date = new Date();
-        let tmpDate = date.getTime();
-        // format
-        let now = Math.floor( tmpDate / 1000 );
+          // get now
+          let date = new Date();
+          let tmpDate = date.getTime();
+          // format
+          let now = Math.floor( tmpDate / 1000 );
 
-        if (!this.idToken.checkPayload(this.clientId, nonce, now)) {
-          reject('check payload failed');
-        }
-        this.pubKeyRequest(this.idToken.getKid())
-          .then((response) => {
-            if (!this.idToken.verifySignature(response[idToken.getKid()])) {
-              reject('check signature failed');
-            }
-            resolve(this.accessToken);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      })
-      .catch((error) => {
-        reject(error)
-      });
-    );
+          if (!this.idToken.checkPayload(this.clientId, nonce, now)) {
+            reject('check payload failed');
+          }
+          this.pubKeyRequest(this.idToken.getKid())
+            .then((response) => {
+              if (!this.idToken.verifySignature(response[this.idToken.getKid()])) {
+                reject('check signature failed');
+              }
+              resolve(this.accessToken);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        })
+        .catch((error) => {
+          reject(error)
+        });
+    });
   }
 
   tokenRequest(code) {
     return new Promise((resolve, reject) => {
-      request.({
+      request({
         uri: tokenUrl,
         method: 'POST',
         headers: {
@@ -63,31 +64,31 @@ class yconnect {
         },
         form: {
           code: code,
-          client_id: clientId,
-          client_secret: clientSec,
-          redirect_uri: redirectUri,
+          client_id: this.clientId,
+          client_secret: this.clientSec,
+          redirect_uri: this.redirectUri,
           grant_type: 'authorization_code'
         },
         json: true
       })
-      .then(response) => {
+      .then((response) => {
         resolve(response);
-      }
-      .catch(error) => {
+      })
+      .catch((error) => {
         reject('token request error');
-      }
+      })
     });
   }
 
   pubKeyRequest(kid) {
     return new Promise((resolve, reject) => {
-      request(pubKeyUrl)
+      request({uri: pubKeyUrl, json: true})
         .then((response) => {
           resolve(response);
         })
-        .catch(error) => {
+        .catch((error) => {
           reject('pubkey request failed')
-        }
+        })
     })
   }
 }
