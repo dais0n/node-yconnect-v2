@@ -21,15 +21,22 @@ class yconnect {
     this.accessToken = accessToken;
   }
 
-  authorization(code) {
+  authorization(code, nonce) {
     return new Promise((resolve, reject) => {this.tokenRequest(code)
       .then((response) => {
         setIdToken(response['id_token']);
         setAccessToken(response['access_token']);
-        if (!this.idToken.checkPayload()) {
+
+        // get now
+        let date = new Date();
+        let tmpDate = date.getTime();
+        // format
+        let now = Math.floor( tmpDate / 1000 );
+
+        if (!this.idToken.checkPayload(this.clientId, nonce, now)) {
           reject('check payload failed');
         }
-        this.pubKeyRequest(idToken.getKid())
+        this.pubKeyRequest(this.idToken.getKid())
           .then((response) => {
             if (!this.idToken.verifySignature(response[idToken.getKid()]) {
               reject('check signature failed');
