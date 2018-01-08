@@ -1,5 +1,5 @@
 const request = require('request-promise');
-cosst IdToken = require('./idtoken');
+const IdToken = require('./idtoken');
 
 const tokenUrl    = 'https://auth.login.yahoo.co.jp/yconnect/v2/token';
 const pubKeyUrl   = 'https://auth.login.yahoo.co.jp/yconnect/v2/public-keys';
