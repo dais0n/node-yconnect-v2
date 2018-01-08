@@ -1,3 +1,3 @@
-var yconnect = require('./lib/yconnect');
+var yconnect = require('./src/yconnect');
 
 module.exports = yconnect;
