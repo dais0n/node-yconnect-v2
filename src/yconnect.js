@@ -38,7 +38,7 @@ class yconnect {
         }
         this.pubKeyRequest(this.idToken.getKid())
           .then((response) => {
-            if (!this.idToken.verifySignature(response[idToken.getKid()]) {
+            if (!this.idToken.verifySignature(response[idToken.getKid()])) {
               reject('check signature failed');
             }
             resolve(this.accessToken);
