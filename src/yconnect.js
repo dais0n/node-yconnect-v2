@@ -7,7 +7,6 @@ const userInfoUrl = 'https://userinfo.yahooapis.jp/yconnect/v2/attribute';
 
 class yconnect {
   constructor(clientId, clientSec, redirectUri) {
-    this.accessToken;
     this.clientId    = clientId;
     this.clientSec   = clientSec;
     this.redirectUri = redirectUri
@@ -17,17 +16,12 @@ class yconnect {
     this.idToken = new IdToken(idToken);
   }
 
-  setAccessToken(accessToken) {
-    this.accessToken = accessToken;
-  }
-
   authorization(code, nonce) {
     return new Promise((resolve, reject) => {
       this.tokenRequest(code)
         .then((response) => {
           this.setIdToken(response['id_token']);
-          this.setAccessToken(response['access_token']);
-
+          let accessToken = response['access_token']
           // get now
           let date = new Date();
           let tmpDate = date.getTime();
@@ -42,7 +36,7 @@ class yconnect {
               if (!this.idToken.verifySignature(response[this.idToken.getKid()])) {
                 reject('check signature failed');
               }
-              resolve(this.accessToken);
+              resolve(accessToken);
             })
             .catch((error) => {
               reject(error);
@@ -88,6 +82,18 @@ class yconnect {
         })
         .catch((error) => {
           reject('pubkey request failed')
+        })
+    })
+  }
+
+  getUserInfo(accessToken) {
+    return new Promise((resolve, reject) => {
+      request({url: userInfoUrl, headers: { 'Authorization': ' Bearer ' + accessToken}, json: true})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((error) => {
+          reject(error);
         })
     })
   }
