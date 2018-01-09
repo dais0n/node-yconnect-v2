@@ -1,6 +1,8 @@
 # passport-yj-v2
 
 ## Usage
+
+### authrization code flow
 ```javascript
 var YConenct = require('passport-yj-v2');
 
@@ -22,3 +24,4 @@ yconnect.authorization(req.query.code, req.session.nonce)
 })
 
 ```
+### implicit code flow
