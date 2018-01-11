@@ -4,7 +4,8 @@
   "description": "openid connect lib for yconnect_v2",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -R spec"
+    "test": "mocha -R spec",
+    "lint": "eslint src/*"
   },
   "keywords": [
     "openid"
@@ -16,6 +17,7 @@
     "request-promise": "^4.2.2"
   },
   "devDependencies": {
+    "eslint": "^4.15.0",
     "mocha": "^4.1.0"
   }
 }
