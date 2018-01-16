@@ -1,12 +1,12 @@
-const jwt = require( "jsonwebtoken" );
+const jwt = require( 'jsonwebtoken' );
 
-const issuer = "https://auth.login.yahoo.co.jp/yconnect/v2";
-const requiredKeys = [ "iss", "sub", "aud", "exp", "iat", "amr", "nonce", "at_hash" ];
+const issuer = 'https://auth.login.yahoo.co.jp/yconnect/v2';
+const requiredKeys = ['iss', 'sub', 'aud', 'exp', 'iat', 'amr', 'nonce', 'at_hash'];
 
 class IdToken {
     constructor( token ) {
         this.token = token;
-        this.decodedToken = jwt.decode( token, { "complete": true } );
+        this.decodedToken = jwt.decode( token, {'complete': true} );
     }
 
     getKid() {
@@ -75,7 +75,7 @@ class IdToken {
     }
 
     verifySignature( pubKey ) {
-        return jwt.verify( this.token, pubKey, { "algorithms": [ "RS256" ] }, ( err, payload ) => {
+        return jwt.verify( this.token, pubKey, {'algorithms': ['RS256']}, ( err, payload ) => {
             // if token alg !== RS256,  err !== invalid signature
             if ( err !== null ) {
                 return false;

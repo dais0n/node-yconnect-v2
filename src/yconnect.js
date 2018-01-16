@@ -1,9 +1,9 @@
-const request = require( "request-promise" );
-const IdToken = require( "./idtoken" );
+const request = require( 'request-promise' );
+const IdToken = require( './idtoken' );
 
-const tokenUrl = "https://auth.login.yahoo.co.jp/yconnect/v2/token";
-const pubKeyUrl = "https://auth.login.yahoo.co.jp/yconnect/v2/public-keys";
-const userInfoUrl = "https://userinfo.yahooapis.jp/yconnect/v2/attribute";
+const tokenUrl = 'https://auth.login.yahoo.co.jp/yconnect/v2/token';
+const pubKeyUrl = 'https://auth.login.yahoo.co.jp/yconnect/v2/public-keys';
+const userInfoUrl = 'https://userinfo.yahooapis.jp/yconnect/v2/attribute';
 
 class yconnect {
     constructor( clientId, clientSec, redirectUri ) {
@@ -29,12 +29,12 @@ class yconnect {
                     let now = Math.floor( tmpDate / 1000 );
 
                     if ( !this.idToken.checkPayload( this.clientId, nonce, now ) ) {
-                        reject( "check payload failed" );
+                        reject( 'check payload failed' );
                     }
                     this.pubKeyRequest( this.idToken.getKid() )
                         .then( ( keyResponse ) => {
-                            if ( !this.idToken.verifySignature( keyResponse[ this.idToken.getKid() ] ) ) {
-                                reject( "check signature failed" );
+                            if ( !this.idToken.verifySignature( keyResponse[this.idToken.getKid()] ) ) {
+                                reject( 'check signature failed' );
                             }
                             resolve( accessToken );
                         } )
@@ -51,19 +51,19 @@ class yconnect {
     tokenRequest( code ) {
         return new Promise( ( resolve, reject ) => {
             request( {
-                "uri": tokenUrl,
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                'uri': tokenUrl,
+                'method': 'POST',
+                'headers': {
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                "form": {
-                    "code": code,
-                    "client_id": this.clientId,
-                    "client_secret": this.clientSec,
-                    "redirect_uri": this.redirectUri,
-                    "grant_type": "authorization_code"
+                'form': {
+                    'code': code,
+                    'client_id': this.clientId,
+                    'client_secret': this.clientSec,
+                    'redirect_uri': this.redirectUri,
+                    'grant_type': 'authorization_code',
                 },
-                "json": true
+                'json': true,
             } )
                 .then( ( response ) => {
                     resolve( response );
@@ -76,7 +76,7 @@ class yconnect {
 
     pubKeyRequest() {
         return new Promise( ( resolve, reject ) => {
-            request( { "uri": pubKeyUrl, "json": true } )
+            request( {'uri': pubKeyUrl, 'json': true} )
                 .then( ( response ) => {
                     resolve( response );
                 } )
@@ -88,7 +88,7 @@ class yconnect {
 
     getUserInfo( accessToken ) {
         return new Promise( ( resolve, reject ) => {
-            request( { "url": userInfoUrl, "headers": { "Authorization": ` Bearer ${ accessToken}` }, "json": true } )
+            request( {'url': userInfoUrl, 'headers': {'Authorization': ` Bearer ${ accessToken}`}, 'json': true} )
                 .then( ( response ) => {
                     resolve( response );
                 } )
