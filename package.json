@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec",
-    "lint": "eslint src",
-    "fixer": "eslint src --fix"
+    "lint": "./node_modules/.bin/eslint src/",
+    "fixer": "./node_modules/.bin/eslint src/ --fix"
   },
   "keywords": [
     "openid"
