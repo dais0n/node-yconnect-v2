@@ -3,16 +3,41 @@ const jwt = require( 'jsonwebtoken' );
 const issuer = 'https://auth.login.yahoo.co.jp/yconnect/v2';
 const requiredKeys = ['iss', 'sub', 'aud', 'exp', 'iat', 'amr', 'nonce', 'at_hash'];
 
+/**
+ * IdToken class.
+ * @class IdToken
+ */
 class IdToken {
+   /**
+    * @constructor IdToken
+    * @param {string} token
+    */
     constructor( token ) {
+        /**
+         * raw idtoken
+         * @member IdToken#token
+         */
         this.token = token;
+
+        /**
+         * decoded idtoken
+         * @member IdToken#decodedToken
+         */
         this.decodedToken = jwt.decode( token, {'complete': true} );
     }
 
+    /**
+     * get pubkey kid
+     * @return {string}
+     */
     getKid() {
         return this.decodedToken.header.kid;
     }
 
+    /**
+     * check id token format
+     * @return {boolean}
+     */
     checkFormat() {
         for ( let key of requiredKeys ) {
             if ( !( key in this.decodedToken.payload ) ) {
@@ -22,6 +47,11 @@ class IdToken {
         return true;
     }
 
+    /**
+     * check exp time
+     * @param {number} now
+     * @return {boolean}
+     */
     checkExpTime( now ) {
         if ( now > this.decodedToken.payload.exp ) {
             return false;
@@ -29,6 +59,11 @@ class IdToken {
         return true;
     }
 
+    /**
+     * check iat time
+     * @param {number} now
+     * @return {boolean}
+     */
     checkIatTime( now ) {
     // check iat within 10 minuts from now
         let acceptableRange = 600;
@@ -40,6 +75,13 @@ class IdToken {
         return true;
     }
 
+    /**
+     * check payload
+     * @param {string} clientId
+     * @param {string} nonce
+     * @param {number} now
+     * @return {boolean}
+     */
     checkPayload( clientId, nonce, now ) {
     // check format
         if ( !this.checkFormat() ) {
@@ -74,6 +116,11 @@ class IdToken {
         return true;
     }
 
+    /**
+     * verify signature
+     * @param {string} pubKey
+     * @return {boolean}
+     */
     verifySignature( pubKey ) {
         return jwt.verify( this.token, pubKey, {'algorithms': ['RS256']}, ( err, payload ) => {
             // if token alg !== RS256,  err !== invalid signature
