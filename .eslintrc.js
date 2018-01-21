@@ -1,6 +1,6 @@
 module.exports = {
-  "env": {
-    "es6": true
-  },
-    "extends": "google"
+    "extends": "google",
+    "parserOptions": {
+    	"ecmaVersion": 2017,
+    }
 };

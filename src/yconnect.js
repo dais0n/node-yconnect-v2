@@ -1,102 +1,130 @@
 const request = require( 'request-promise' );
 const IdToken = require( './idtoken' );
 
-const tokenUrl = 'https://auth.login.yahoo.co.jp/yconnect/v2/token';
-const pubKeyUrl = 'https://auth.login.yahoo.co.jp/yconnect/v2/public-keys';
-const userInfoUrl = 'https://userinfo.yahooapis.jp/yconnect/v2/attribute';
+/**
+ * YConnect class.
+ * @class Yconnect
+ */
+class YConnect {
+  /**
+   * @constructor YConnect
+   * @param {string} clientId
+   * @param {string} clientSec
+   * @param {string} redirectUri
+   */
+  constructor( clientId, clientSec, redirectUri ) {
+    /**
+     * client id
+     * @member YConnect#clientId
+     */
+    this.clientId = clientId;
+    /**
+     * client secret
+     * @member YConnect#clientSec
+     */
+    this.clientSec = clientSec;
+    /**
+     * redirect uri
+     * @member YConnect#redirectUri
+     */
+    this.redirectUri = redirectUri;
+  }
 
-class yconnect {
-    constructor( clientId, clientSec, redirectUri ) {
-        this.clientId = clientId;
-        this.clientSec = clientSec;
-        this.redirectUri = redirectUri;
+  /**
+   * set id token
+   * @param {string} idToken
+   */
+  setIdToken( idToken ) {
+    this.idToken = new IdToken( idToken );
+  }
+
+  /**
+   * authorization request
+   * @param {string} code
+   * @param {string} nonce
+   * @return {object} Promise
+   */
+  async authorization( code, nonce ) {
+    try {
+      // token request
+      const tokenResponse = await this.tokenRequest(code);
+      this.setIdToken(tokenResponse.id_token);
+
+      // get now
+      const date = new Date();
+      const tmpDate = date.getTime();
+      const now = Math.floor( tmpDate / 1000 );
+
+      // check Payload
+      if ( !this.idToken.checkPayload( this.clientId, nonce, now ) ) {
+        console.log('check payload failed' );
+      }
+
+      // key request
+      const keyResponse = await this.pubKeyRequest(this.idToken.getKid());
+      const keyid = keyResponse[this.idToken.getKid()];
+
+      // chech signature
+      if ( !this.idToken.verifySignature( keyid ) ) {
+        console.log('check signature failed' );
+      }
+      return true;
+    } catch (err) {
+      console.log(err);
     }
+  }
 
-    setIdToken( idToken ) {
-        this.idToken = new IdToken( idToken );
-    }
 
-    authorization( code, nonce ) {
-        return new Promise( ( resolve, reject ) => {
-            this.tokenRequest( code )
-                .then( ( tokenResponse ) => {
-                    this.setIdToken( tokenResponse.id_token );
-                    let accessToken = tokenResponse.access_token;
-                    // get now
-                    let date = new Date();
-                    let tmpDate = date.getTime();
-                    // format
-                    let now = Math.floor( tmpDate / 1000 );
+  /**
+   * token request
+   * @param {string} code
+   * @return {object} Promise
+   */
+  async tokenRequest( code ) {
+    const options = {
+      'uri': 'https://auth.login.yahoo.co.jp/yconnect/v2/token',
+      'method': 'POST',
+      'headers': {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      'form': {
+        'code': code,
+        'client_id': this.clientId,
+        'client_secret': this.clientSec,
+        'redirect_uri': this.redirectUri,
+        'grant_type': 'authorization_code',
+      },
+      'json': true,
+    };
+    return await request(options);
+  }
 
-                    if ( !this.idToken.checkPayload( this.clientId, nonce, now ) ) {
-                        reject( 'check payload failed' );
-                    }
-                    this.pubKeyRequest( this.idToken.getKid() )
-                        .then( ( keyResponse ) => {
-                            if ( !this.idToken.verifySignature( keyResponse[this.idToken.getKid()] ) ) {
-                                reject( 'check signature failed' );
-                            }
-                            resolve( accessToken );
-                        } )
-                        .catch( ( error ) => {
-                            reject( error );
-                        } );
-                } )
-                .catch( ( error ) => {
-                    reject( error );
-                } );
-        } );
-    }
+  /**
+   * pubkey request
+   * @return {object} Promise
+   */
+  async pubKeyRequest() {
+    const options = {
+      url: 'https://auth.login.yahoo.co.jp/yconnect/v2/public-keys',
+      json: true,
+    };
+    return await request.get(options);
+  }
 
-    tokenRequest( code ) {
-        return new Promise( ( resolve, reject ) => {
-            request( {
-                'uri': tokenUrl,
-                'method': 'POST',
-                'headers': {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                'form': {
-                    'code': code,
-                    'client_id': this.clientId,
-                    'client_secret': this.clientSec,
-                    'redirect_uri': this.redirectUri,
-                    'grant_type': 'authorization_code',
-                },
-                'json': true,
-            } )
-                .then( ( response ) => {
-                    resolve( response );
-                } )
-                .catch( ( error ) => {
-                    reject( error );
-                } );
-        } );
-    }
 
-    pubKeyRequest() {
-        return new Promise( ( resolve, reject ) => {
-            request( {'uri': pubKeyUrl, 'json': true} )
-                .then( ( response ) => {
-                    resolve( response );
-                } )
-                .catch( ( error ) => {
-                    reject( error );
-                } );
-        } );
-    }
-
-    getUserInfo( accessToken ) {
-        return new Promise( ( resolve, reject ) => {
-            request( {'url': userInfoUrl, 'headers': {'Authorization': ` Bearer ${ accessToken}`}, 'json': true} )
-                .then( ( response ) => {
-                    resolve( response );
-                } )
-                .catch( ( error ) => {
-                    reject( error );
-                } );
-        } );
-    }
+  /**
+   * userinfo request
+   * @param {string} accessToken
+   * @return {object} Promise
+   */
+  async getUserInfo( accessToken ) {
+    const options = {
+      'url': 'https://userinfo.yahooapis.jp/yconnect/v2/attribute',
+      'headers': {'Authorization': ` Bearer ${ accessToken}`},
+      'json': true,
+    };
+    return await request.get(options);
+  }
 }
 
-module.exports = yconnect;
+module.exports = YConnect;
