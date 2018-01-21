@@ -1,27 +1,21 @@
 # passport-yj-v2
+Yahoo! Japan Openid Connect Client Library for [YConnect v2](https://developer.yahoo.co.jp/yconnect/v2/)
 
 ## Usage
 
-### authrization code flow
 ```javascript
-var YConenct = require('passport-yj-v2');
+const yconnect = new YConnect(clientId, clientSec, redirectUri);
 
-var yconnect = new YConnect(clientId, clientSec, redirectUri);
-// token request and check payload and verify id_token
+// authorization code flow
 yconnect.authorization(req.query.code, req.session.nonce)
 .then((accessToken) => {
-  // user info request
-  yconnect.getUserInfo(accessToken)
-    .then((userinfo) => {
-      console.log(userinfo);
-    })
-    .catch((error) => {
-      console.log(error);
-    })
+  // userinfo request
+  return yconnect.getUserInfo(accessToken);
 })
-.catch((error) => {
-  console.log(error);
+.then((userinfo) => {
+  console.log(userinfo);
 })
-
+.catch((err) => {
+  console.log(err);
+});
 ```
-### implicit code flow
