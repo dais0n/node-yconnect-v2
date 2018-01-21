@@ -15,6 +15,7 @@ yconnect.authorization(req.query.code, req.session.nonce)
   return yconnect.getUserInfo(accessToken);
 })
 .then((userinfo) => {
+  // userinfo.name, userinfo.gender
   console.log(userinfo);
 })
 .catch((err) => {
