@@ -1,6 +1,11 @@
 # node-yconnect-v2
 Yahoo! Japan Openid Connect Client Library for [YConnect v2](https://developer.yahoo.co.jp/yconnect/v2/)
 
+## Installation
+```bash
+npm install node-yconnect-v2 --save
+```
+
 ## Usage
 
 ```javascript
