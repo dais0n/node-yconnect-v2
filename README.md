@@ -1,9 +1,11 @@
-# passport-yj-v2
+# node-yconnect-v2
 Yahoo! Japan Openid Connect Client Library for [YConnect v2](https://developer.yahoo.co.jp/yconnect/v2/)
 
 ## Usage
 
 ```javascript
+const YConnect = require('node-yconnect-v2');
+
 const yconnect = new YConnect(clientId, clientSec, redirectUri);
 
 // authorization code flow
