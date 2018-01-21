@@ -57,19 +57,20 @@ class YConnect {
 
       // check Payload
       if ( !this.idToken.checkPayload( this.clientId, nonce, now ) ) {
-        console.log('check payload failed' );
+        throw new Error('check payload failed');
       }
 
       // key request
       const keyResponse = await this.pubKeyRequest(this.idToken.getKid());
       const keyid = keyResponse[this.idToken.getKid()];
+
       // chech signature
       if ( !this.idToken.verifySignature( keyid ) ) {
-        console.log('check signature failed' );
+        throw new Error('check signature failed');
       }
       return tokenResponse.access_token;
     } catch (err) {
-      console.log(err);
+      throw new Error(err);
     }
   }
 

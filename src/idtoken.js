@@ -101,7 +101,7 @@ class IdToken {
     }
 
     // check client_id
-    if ( clientId !== this.decodedToken.payload.aud ) {
+    if ( clientId !== this.decodedToken.payload.aud[0] ) {
       return false;
     }
 
