@@ -42,7 +42,7 @@ class YConnect {
    * authorization request
    * @param {string} code
    * @param {string} nonce
-   * @return {object} Promise
+   * @return {string} access_token;
    */
   async authorization( code, nonce ) {
     try {
@@ -63,12 +63,11 @@ class YConnect {
       // key request
       const keyResponse = await this.pubKeyRequest(this.idToken.getKid());
       const keyid = keyResponse[this.idToken.getKid()];
-
       // chech signature
       if ( !this.idToken.verifySignature( keyid ) ) {
         console.log('check signature failed' );
       }
-      return true;
+      return tokenResponse.access_token;
     } catch (err) {
       console.log(err);
     }
