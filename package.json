@@ -1,12 +1,22 @@
 {
   "name": "node-yconnect-v2",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "openid connect lib for yconnect_v2",
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec",
     "lint": "./node_modules/.bin/eslint src/",
     "fixer": "./node_modules/.bin/eslint src/ --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dais0n/node-yconnect-v2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dais0n/node-yconnect-v2/issues"
+  },
+  "engines": {
+    "node": ">= 8.0"
   },
   "keywords": [
     "openid"
